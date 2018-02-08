@@ -1,0 +1,14 @@
+(* 
+
+6. Write a function get_nth that takes a list of strings and an int n and returns the n th element of the
+list where the head of the list is 1 st . Do not worry about the case where the list has too few elements:
+your function may apply hd or tl to the empty list in this case, which is okay.
+
+val get_nth = fn : string list * int -> string
+
+*)
+
+fun get_nth () =
+  true
+
+(*--------------------------------------------------------------------------------*)

@@ -26,4 +26,15 @@ val x2 = #1 (#2 x1)  (* bool *)
 
 val x3 = (#2 x1)      (* bool*int *)
 
-val x4 = ((3,5),((4,8),(0,0))) (* (int * int) * ((int * int) * (int * int)) *)
+val x4 = ((3,5),((4,8),(0,0))) (* (int * int) * ((int * int) * (int * int)) *);
+
+
+
+
+fun sum_three_pairs (pr1 : int*int, pr2 : int*int, pr3 : int*int) =
+    (#1 pr1 + #2 pr1) + (#1 pr2 + #2 pr2) + (#1 pr3 + #2 pr3);
+
+val x5 = sum_three_pairs((1,1), (2,2), (3,3));
+
+
+	     

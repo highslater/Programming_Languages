@@ -1,0 +1,208 @@
+fun pow (x : int, y : int) =
+  if y = 0
+  then 1
+  else x * pow(x, y-1)
+
+fun cube (x : int) =
+  pow(x,3)
+
+fun count (x :int, y : int, z : int) =
+  if x = 0
+  then []
+  else ( x, y, z ) :: count(x - 1, y * z, z-1)
+
+fun swap (pr : int * bool) =
+  (#2 pr, #1 pr)
+
+fun sum_pair_of_threes (pr1: int * int * int, pr2 : int * int * int) =
+  (((#1 pr1) + (#2 pr1) + (#3 pr1)) , ((#1 pr2) + (#2 pr2) + (#3 pr2)))
+
+fun div_mod (x : int, y : int) =
+  (x div y, x mod y)
+
+fun sort_pair (pr : int * int) =
+  if(#1 pr) < (#2 pr)
+  then pr
+  else ((#2 pr), (#1 pr))
+
+
+val TEST_01_pow = pow(2,3) = 8
+val TEST_02_cube = cube(2) = 8
+val TEST_03_count = count(5,8,5) = [(5,8,5),(4,40,4),(3,160,3),(2,480,2),(1,960,1)]
+val TEST_04_swap = swap (3, true) = (true, 3)
+val TEST_05_sum_pair_of_threes  = sum_pair_of_threes ((1,2,3), (3,2,1)) = (6,6)
+val TEST_06_pow_sum =  pow ( sum_pair_of_threes ((1,2,3), (3,2,1))) = 46656
+val TEST_07_div_mod = div_mod (5, 3) = (1, 2)
+val TEST_08_sort_pair =  sort_pair (1,2) = (1,2)
+val TEST_09_sort_pair =  sort_pair (2,1) = (1,2) 
+
+
+fun sum_list ( xs : int list ) =
+  if null xs then 0
+  else hd xs  + sum_list ( tl xs )
+
+fun countdown ( x : int ) =
+  if x = 0 then []
+  else x :: countdown ( x -1 )
+
+fun append ( xs : int list, ys : int list) =
+  if null xs then ys
+  else  hd xs  :: append ( tl xs , ys)
+
+val TEST_10_sum_list = sum_list ([1,2,3,4,5]) = 15
+val TEST_11_countdown = countdown (8) = [8,7,6,5,4,3,2,1]
+val TEST_12_append = append ( [ 1,2,3 ], [ 4,5,6 ] ) = [1,2,3,4,5,6]
+
+
+fun sum_pair_lists ( xs : ( int * int ) list ) =
+  if null xs then 0
+  else ( #1( hd xs ) + #2( hd xs )) + sum_pair_lists ( tl xs )
+
+fun firsts ( xs : ( int * int ) list ) =
+  if null xs then []
+  else (#1 ( hd xs )) :: (firsts ( tl xs ))
+
+fun seconds ( xs : ( int * int ) list ) =
+  if null xs then []
+  else (#2 ( hd xs )) :: (seconds ( tl xs ))
+
+fun sum_pair_lists2 ( xs : ( int * int ) list ) =
+  (sum_list ( firsts xs )) + (sum_list ( seconds xs ))
+
+val TEST_13_sum_pair_lists = sum_pair_lists ([(1, 2), (2, 3), (3, 4)]) = 15
+val TEST_14_firsts = firsts ( [ ( 3, 2 ), ( 3, 1 ) ] ) = [ 3, 3 ]
+val TEST_15_seconds = seconds ( [ ( 3, 2 ), ( 3, 1 ) ] ) = [ 2, 1  ]
+val TEST_16_sum_pair_lists2 = sum_pair_lists2 ( [ ( 1 ,2 ), ( 3, 4 )] ) = 10
+
+
+fun count_up_from_1 (x : int) =
+  let
+      fun count (from : int, to : int) =
+	if from = to then to :: []
+	else from :: count (from +1, to)
+  in
+      count(1,x)
+
+  end
+
+fun count_up_from_1_better (x : int) =
+  let
+      fun count (from : int) =
+	if from = x then x :: []
+	else from :: count (from +1)
+  in
+      count 1
+  end
+
+fun count_between_two (x : int, y : int) =
+  let
+      fun count (from : int) =
+	if from = y then y :: []
+	else from :: count (from +1)
+  in
+      count x
+  end
+
+fun count_between_two_better (x : int, y : int) =
+  if x = y then x :: []
+  else x :: count_between_two_better (x + 1, y)
+ 
+fun bad_max (xs : int list) =
+  if null xs then 0
+  else if null (tl xs) then hd xs
+  else if hd xs > bad_max (tl xs) then hd xs
+  else bad_max (tl xs)
+
+fun good_max (xs : int list) =
+  if null xs then 0 else if null (tl xs) then hd xs else let
+      val tl_ans = good_max(tl xs)
+  in if hd xs > tl_ans then hd xs else tl_ans end
+
+fun better_max (xs : int list) =
+  if null xs then NONE else let 
+      val tl_ans = better_max(tl xs)
+  in if isSome tl_ans andalso valOf tl_ans > hd xs then tl_ans else SOME (hd xs) end
+
+
+fun better_max2 (xs : int list) =
+  if null xs then NONE else let
+      fun max_non_empty (xs : int list) =
+	if null (tl xs) then (hd xs) else let
+	    val tl_ans = max_non_empty (tl xs)
+	in if hd xs > tl_ans then hd xs else tl_ans end
+  in SOME (max_non_empty xs) end
+
+	
+val TEST_17_count_up_from_1 = count_up_from_1 (8) = [1,2,3,4,5,6,7,8]
+val TEST_18_count_up_from_1_better = count_up_from_1_better (8) = [1,2,3,4,5,6,7,8]
+val TEST_19_count_between_two = count_between_two (3,8) = [3,4,5,6,7,8]
+val TEST_20_count_between_two_better = count_between_two_better (3,8) = [3,4,5,6,7,8]
+val TEST_21_bad_max = bad_max ([1,2,3,4,5,6,7,8,9]) = 9
+val TEST_22_bad_max_count_up =  bad_max(count_up_from_1(20)) = 20
+val TEST_23_good_max = good_max([1,2,3,4,5,6,7,8,9]) = 9
+val TEST_24_good_max = good_max(count_up_from_1(30)) = 30
+val TEST_25_better_max = better_max([1,2,3,4,5,6,7,8,9]) = SOME 9
+val TEST_26_better_max = better_max([]) = NONE
+val TEST_27_better_max2 = better_max2([1,2,3,4,5,6,7,8,9]) = SOME 9
+val TEST_28_better_max2 = better_max2([]) = NONE
+
+
+
+(* TEST RESULTS *************************************************************************)
+ 
+
+val results = [TEST_01_pow, TEST_02_cube, TEST_03_count, TEST_04_swap,
+	       TEST_05_sum_pair_of_threes, TEST_06_pow_sum, TEST_07_div_mod,
+	       TEST_08_sort_pair, TEST_09_sort_pair, TEST_10_sum_list,
+	       TEST_11_countdown, TEST_12_append, TEST_13_sum_pair_lists,
+	       TEST_14_firsts, TEST_15_seconds, TEST_16_sum_pair_lists2,
+	       TEST_17_count_up_from_1, TEST_18_count_up_from_1_better,
+	       TEST_19_count_between_two, TEST_20_count_between_two_better,
+	       TEST_21_bad_max, TEST_22_bad_max_count_up, TEST_23_good_max,
+	       TEST_24_good_max, TEST_25_better_max, TEST_26_better_max,
+	       TEST_27_better_max2, TEST_28_better_max2]
+
+fun add_results (rs : bool list) =
+ if null (rs) then []
+ else if (hd rs) = false then 1 :: add_results(tl rs)
+ else add_results(tl rs)
+
+val failures_x = "*********************************************************************"
+
+val total_failures =
+  sum_list(add_results(results))
+
+val failures_y = "*********************************************************************"
+
+fun test () = 
+  let
+      val list = [1,2,3,4,5]
+      val one = [1]
+      val empty = []
+
+      fun head (xs : int list) =
+	if null xs
+	then NONE 
+	else SOME (hd xs)
+
+      fun tail (xs : int list) =
+	if null xs
+	   orelse null (tl xs)
+	then NONE
+	else SOME (tl xs)
+
+      val TESTS =
+	  [
+	    ( "TEST_01", head list = SOME 1 ),
+	    ( "TEST_02", head one = SOME 1 ),
+	    ( "TEST_03", head empty = NONE ),
+	    ( "TEST_04", tail list = SOME [2,3,4,5] ),
+	    ( "TEST_05", tail one = NONE ),
+	    ( "TEST_06", tail empty = NONE )
+	  ]
+  in
+    TESTS
+  end
+
+
+(************************************************************************* TEST RESULTS *)

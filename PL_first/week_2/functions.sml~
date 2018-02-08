@@ -1,0 +1,5 @@
+fun intList_product (intList : int list) =
+  if null intList
+  then 1
+  else hd intList * intList_product(tl intList)
+

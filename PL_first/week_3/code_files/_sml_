@@ -1,0 +1,25 @@
+Standard ML of New Jersey v110.76 [built: Tue Oct 22 14:04:11 2013]
+- [opening /tmp/emacs-region12016SfY]
+val x = {bar=(3,true),baz=(false,9),foo=7}
+  : {bar:int * bool, baz:bool * int, foo:int}
+val my_niece = {id=41111,name="Amelia"} : {id:int, name:string}
+val brain_part = {ego=false,id=true,superego=false}
+  : {ego:bool, id:bool, superego:bool}
+val it = () : unit
+- x
+= ;
+val it = {bar=(3,true),baz=(false,9),foo=7}
+  : {bar:int * bool, baz:bool * int, foo:int}
+- x(bar);
+stdIn:4.3-4.6 Error: unbound variable or constructor: bar
+stdIn:4.1-4.7 Error: operator is not a function [tycon mismatch]
+  operator: {bar:int * bool, baz:bool * int, foo:int}
+  in expression:
+    x <errorvar>
+- x[1]
+= ;
+stdIn:1.2-1.6 Error: operator is not a function [tycon mismatch]
+  operator: {bar:int * bool, baz:bool * int, foo:int}
+  in expression:
+    x (1 :: nil)
+- 
