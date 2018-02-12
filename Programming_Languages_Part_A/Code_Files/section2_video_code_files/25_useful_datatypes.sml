@@ -27,8 +27,12 @@ fun number_of_adds e =
       | Add(e1,e2)      => 1 + number_of_adds e1 + number_of_adds e2
       | Multiply(e1,e2) => number_of_adds e1 + number_of_adds e2
 
-val example_exp = Add (Constant 19, Negate (Constant 4))
+val example_exp : exp = Add (Constant 19, Negate (Constant 4))
 
-val example_ans = eval example_exp
-
+val example_ans : int = eval example_exp
 val example_addcount = number_of_adds (Multiply(example_exp,example_exp))
+val h : int = 8
+val i : real = 8.0
+val j : string = "8"
+val k : bool = true
+val l : char = #"l"
