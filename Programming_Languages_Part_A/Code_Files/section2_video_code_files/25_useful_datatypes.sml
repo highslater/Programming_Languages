@@ -8,6 +8,9 @@ datatype rank = Jack | Queen | King | Ace | Num of int
 datatype id = StudentNum of int 
             | Name of string * (string option) * string
 
+
+val it = Name ("First",SOME "Middle","Last") : id
+
 datatype exp = Constant of int 
              | Negate of exp 
              | Add of exp * exp

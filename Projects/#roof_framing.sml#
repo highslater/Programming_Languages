@@ -1,0 +1,45 @@
+(* roof_framing.sml *)
+
+(* open Math *)
+
+val roof_cut = {span = 24, pitch = 8};
+val v = {5 = 1, 4 = 2, 3 = 3, 2 = 4, 1 = 5}
+
+	    
+fun rise (params) =
+    (#span roof_cut * #pitch roof_cut) div (24);
+
+
+fun unit_length (params) =
+    let val x = real((#pitch roof_cut * #pitch roof_cut) + 144)
+    in Real.toString(real(round(Math.sqrt(x) * 100.0)) / 100.0)
+    end
+
+	
+val r = rise(roof_cut) = 8;
+val u = unit_length(roof_cut) = "14.42";
+
+
+datatype roofCut = english of int * int
+		  |decimal of real * real
+		  |pitch of real
+
+				
+fun slope x =
+    
+    case x of
+
+	english (rise, run)
+	=> Real.toString(2.0 * real(run) / real(rise))
+			
+      | decimal (rise, run)
+	=> Real.toString(real(round((rise / run)* 1000.0)) / 1000.0)
+			
+      | pitch (p)
+	=> Real.toString( 24.0 * p)
+
+
+					    
+val TEST_1 = slope(english (8, 12)) = "3.0";
+val TEST_2 = slope(decimal (8.0, 12.0)) = "0.667";
+val TEST_3 = slope(pitch (1.0 / 3.0)) = "8.0";

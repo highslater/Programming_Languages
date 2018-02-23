@@ -3,7 +3,7 @@
 
 fun hd xs =
     case xs of
-        []   => raise List.Empty
+        []   => raise List.Empty (* All ready defined "what are others ?" *)
       | x::_ => x
 
 exception MyUndesirableCondition
