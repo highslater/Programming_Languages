@@ -419,16 +419,36 @@ fun max_constant2 e =
 
 (* Section 2: Lists and Options are Datatypes *)
 
+
+(* ------------------------------------------------ *)
+				  
 datatype my_int_list = Empty 
                      | Cons of int * my_int_list
 					 
-val one_two_three = Cons(1,Cons(2,Cons(3,Empty)))
+val one2345 = Cons(1,Cons(2,Cons(3,Cons(4, Cons(5, Empty)))))
+val six789 = Cons(6,Cons(7,Cons(8,Cons(9, Empty))))
+					 
+fun eval_mil (xs) =
+    case xs of
+	Empty => []
+      | Cons(x,xs') => x :: eval_mil(xs')
 
-fun append_mylist (xs,ys) = 
+				    
+fun append_mil (xs,ys) = 
     case xs of
         Empty => ys
-      | Cons(x,xs') => Cons(x, append_mylist(xs',ys))
-
+      | Cons(x,xs') => Cons(x, append_mil(xs',ys))
+			   
+	     
+(* ------------------------------------------------ *)
+				    
+val zero = NONE;
+val five = SOME 5;
+val nada = [];
+val mucho = [1,2,3,4,5,6,7,8,9];
+val uno2345 = eval_mil one2345;
+val sais789 = eval_mil six789;
+			   
 fun inc_or_zero intoption =
     case intoption of
         NONE => 0
@@ -445,14 +465,14 @@ fun append (xs,ys) =
       | x::xs' => x :: append(xs',ys)
 
 			     
-val TEST_025 = true
-val TEST_026 = true
-val TEST_027 = true
-val TEST_028 = true
-val TEST_029 = true
-val TEST_030 = true
-val TEST_031 = true
-val TEST_032 = true
+val TEST_025 = eval_mil one2345 = [1,2,3,4,5];
+val TEST_026 = eval_mil(append_mil(one2345, six789)) = [1,2,3,4,5,6,7,8,9];
+val TEST_027 = inc_or_zero zero = 0;
+val TEST_028 = inc_or_zero five = 6;
+val TEST_029 = sum_list nada = 0;
+val TEST_030 = sum_list mucho = 45;
+val TEST_031 = append(uno2345, sais789) = [1,2,3,4,5,6,7,8,9];
+val TEST_032 = append(uno2345, sais789) = eval_mil(append_mil(one2345, six789))
 
 (* *********************************************************************************
 (* Section 2: Polymorphic Datatypes *)
