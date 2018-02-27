@@ -158,7 +158,6 @@ datatype id = StudentNum of int
 val sn = StudentNum 42
 val fl = Name ("First", NONE, "Last") : id
 val fml = Name ("First", SOME "Middle", "Last") : id
-
 (* 1
 
 fun eval_id (i : id)  =
@@ -247,16 +246,39 @@ fun eval_id (i : id)  =
 	in eval (#2 x)
 	end
 *)
+(* 6
 
 fun eval_id (i : id)  =
     case i of
         StudentNum x  => Int.toString(x)
       | Name x =>
-	let fun eval t =
+	let fun evalX t =
 		case t of
 		    NONE => String.concatWith " " [#1 x, #3 x]
 		  | SOME t  => String.concatWith " " [#1 x, valOf(#2 x), #3 x]
-	in eval (#2 x) end
+	in evalX (#2 x) end
+*)
+
+(*						      
+fun eval_id (i : id)  =
+    case i of
+        StudentNum x  => Int.toString(x)
+      | Name x =>
+	let fun evalX t =
+		case t of
+		    NONE => #1 x ^ " " ^ #3 x
+		  | SOME t  => #1 x ^ " " ^ valOf(#2 x) ^ " " ^ #3 x
+	in evalX (#2 x) end
+*)
+
+fun eval_id (i : id)  =
+    case i of
+	StudentNum x  => Int.toString(x)
+      | Name (f, m, l) =>
+	case m of
+	    NONE => f ^ " " ^ l
+	  | SOME m  => f ^ " " ^ m ^ " " ^ l 
+	
 
 
 				       
@@ -473,8 +495,10 @@ val TEST_029 = sum_list nada = 0;
 val TEST_030 = sum_list mucho = 45;
 val TEST_031 = append(uno2345, sais789) = [1,2,3,4,5,6,7,8,9];
 val TEST_032 = append(uno2345, sais789) = eval_mil(append_mil(one2345, six789))
-
-(* *********************************************************************************
+						  
+(* This causes shadowing errors comment out in order to work *)
+			     
+(* 
 (* Section 2: Polymorphic Datatypes *)
 
 (* type is int list -> int *)
@@ -491,10 +515,13 @@ fun append (xs,ys) =
 
 (* this really is /exactly/ how options are defined 
    careful: now shadowing the built in ones!
-*)
+ *)
+			     
 
-datatype 'a option = NONE | SOME of 'a
+datatype 'a option = NONE | SOME of 'a 
 
+
+			     
 (* similarly, here are polymorphic lists but without special syntax *)
 
 datatype 'a mylist = Empty | Cons of 'a * 'a mylist
@@ -523,15 +550,52 @@ fun num_leaves tr =
 	Leaf i => 1
       | Node(i,lft,rgt) => num_leaves lft + num_leaves rgt
 
+*)
 
-						       
+
 (* Section 2: Pattern-Matching for Each-Of Types: 
               The Truth About Function Arguments *)
 
+						  
+
+datatype StudentId = S_Num of int 
+		   | S_Name of string  * (string option) * string
+
+							       
+val SIsn = S_Num 20181976
+val SIfl = S_Name ("First", NONE, "Last") : StudentId
+val SIfml = S_Name ("First", SOME "Middle", "Last") : StudentId
+
+						      
+fun eval_Student_id (i : StudentId)  =
+    case i of
+	S_Num x  => Int.toString(x)
+       |S_Name (f, m, l) =>
+	case m of
+	    NONE => f ^ " " ^ l
+	  | SOME m  => f ^ " " ^ m ^ " " ^ l 
+
+					       
+val TEST_033 = eval_Student_id SIsn = "20181976"
+val TEST_034 = eval_Student_id SIfl = ("First Last")
+val TEST_035 = eval_Student_id SIfml = ("First Middle Last")
+
+					       
 
 fun sum_triple1 (triple : int * int * int) =
     case triple of
-      (x,y,z) => z + y + x
+	(x,y,z) => z + y + x
+
+			       
+fun sum_triple2 triple =
+    let val (x,y,z) = triple 
+    in 
+        x + y + z 
+    end
+
+	
+fun sum_triple3 (x,y,z) =
+    x + y + z
 
 			     
 fun full_name1 (r : {first:string,middle:string,last:string}) =
@@ -546,19 +610,10 @@ fun full_name2 (r : {first:string,middle:string,last:string}) =
     end
 
 	
-fun sum_triple2 triple =
-    let val (x,y,z) = triple 
-    in 
-        x + y + z 
-    end
-
 	
 fun full_name3 {first=x,middle=y,last=z} =
     x ^ " " ^ y ^ " " ^z
 
-			   
-fun sum_triple3 (x,y,z) =
-    x + y + z
 
 		
 fun rotate_left (x,y,z) = (y,z,x)
@@ -567,21 +622,21 @@ fun rotate_left (x,y,z) = (y,z,x)
 fun rotate_right triple = rotate_left(rotate_left triple)
 
 
-
+						       
 (* Section 2: A Little Type Inference *)
 
-fun sum_triple1 (x, y, z) =
+fun sum_triple4 (x, y, z) =
     x + y + z
 
-fun full_name1 {first=x, middle=y, last=z} =
+fun full_name4 {first=x, middle=y, last=z} =
     x ^ " " ^ y ^ " " ^ z
 
 (* these versions will not type-check without type annotations because
    the type-checker cannot figure out if there might be other fields *)
-fun sum_triple2 (triple : int*int*int) =
+fun sum_triple5 (triple : int*int*int) =
 	   #1 triple + #2 triple + #3 triple
 
-fun full_name2 (r : {first:string, middle:string,
+fun full_name5 (r : {first:string, middle:string,
                     last:string}) =
       #first r ^ " " ^ #middle r ^ " " ^ #last r
 
@@ -695,7 +750,7 @@ fun len xs =
        [] => 0
       | _::xs' => 1 + len xs'
 
-
+(* *********************************************************************************
 (* Section 2: *Optional*: Function Patterns *)
 
 datatype exp = Constant of int 
