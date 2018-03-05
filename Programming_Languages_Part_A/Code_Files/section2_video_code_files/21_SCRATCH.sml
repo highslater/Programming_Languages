@@ -575,6 +575,11 @@ fun eval_Student_id (i : StudentId)  =
 	    NONE => f ^ " " ^ l
 	  | SOME m  => f ^ " " ^ m ^ " " ^ l 
 
+
+
+
+  
+
 					       
 val TEST_033 = eval_Student_id SIsn = "20181976"
 val TEST_034 = eval_Student_id SIfl = ("First Last")
@@ -716,6 +721,7 @@ fun unzip3 lst =
 			   (a::l1,b::l2,c::l3)
 		       end
 
+			   
 
 (* Section 2: More Nested Patterns *)
 
@@ -732,6 +738,7 @@ fun nondecreasing xs =
 *)
 datatype sgn = P | N | Z
 
+			   
 fun multsign (x1,x2) = 
   let fun sign x = if x=0 then Z else if x>0 then P else N 
   in
@@ -743,6 +750,8 @@ fun multsign (x1,x2) =
 	| _     => N (* many say bad style; I am okay with it *)
   end
 
+
+      
 (* simpler use of wildcard pattern for when you do not need the data *)
 
 fun len xs =
@@ -750,9 +759,66 @@ fun len xs =
        [] => 0
       | _::xs' => 1 + len xs'
 
-(* *********************************************************************************
+
+
+
 (* Section 2: *Optional*: Function Patterns *)
 
+
+datatype SI = SI_Num of int 
+		   | SI_Name of string  * (string option) * string
+							       
+val SIsn = SI_Num 20181976 : SI
+val SIfl = SI_Name ("First", NONE, "Last") : SI
+val SIfml = SI_Name ("First", SOME "Middle", "Last") : SI
+							   
+(*1
+							   
+fun eval_SI (SI_Num x) = Int.toString(x)
+  | eval_SI (SI_Name (f, m, l)) =
+    case m of
+	NONE => f ^ " " ^ l
+      | SOME m  => f ^ " " ^ m ^ " " ^ l
+
+*)
+
+(* 2
+
+fun eval_SI_Name (f, m, l) =
+     case m of
+	NONE => f ^ " " ^ l
+      | SOME m  => f ^ " " ^ m ^ " " ^ l
+
+					   
+fun eval_SI (SI_Num x) = Int.toString(x)
+  | eval_SI (SI_Name (f, m, l)) = eval_SI_Name (f, m, l)
+
+*)    
+
+(* 3
+
+fun eval_SI_Name (f, m, l) =
+    case m of
+	NONE => f ^ " " ^ l
+      | SOME m  => f ^ " " ^ m ^ " " ^ l
+					   
+fun eval_SI (SI_Num x) = Int.toString(x)
+  | eval_SI (SI_Name x) = eval_SI_Name (x)
+
+ *)
+
+					   
+fun eval_SI (SI_Num x) = Int.toString(x)
+  | eval_SI (SI_Name(f, NONE , l)) = f ^ " " ^ l
+  | eval_SI (SI_Name(f, SOME m, l)) = f ^ " " ^ m ^ " " ^ l
+
+				       
+val TEST_036 = eval_SI SIsn = "20181976"
+val TEST_037 = eval_SI SIfl = ("First Last")
+val TEST_038 = eval_SI SIfml = ("First Middle Last")
+
+
+				   
 datatype exp = Constant of int 
              | Negate of exp 
              | Add of exp * exp
@@ -774,39 +840,76 @@ fun append ([],ys) = ys
   | append (x::xs',ys) = x :: append(xs',ys)
 
 
-
 (* Section 2: Exceptions *)
 
+
+exception E of string
+
+fun f () = raise E "E has been raised."
+
+fun testF () =
+    f ()
+    handle E msg => msg
+				  
+
+exception Nope of string
+exception Yuppers of int * int
+	      
 fun hd xs =
     case xs of
-        []   => raise List.Empty (* All ready defined "what are others ?" *)
+        []   => raise Nope "Nope"
       | x::_ => x
 
-exception MyUndesirableCondition
+		    
+fun add2 (x,y) =
+    if (x = 1 andalso y = 1)
+    then raise Yuppers (21, 21)
+    else
+	x+y
 
+	  
+exception D_0 of int
+exception D_00 of real
+exception MyUndesirableCondition
 exception MyOtherException of int * int
 
-fun mydiv (x,y) =
+					
+fun mydiv1 (x,y)  =
     if y=0
-    then raise MyUndesirableCondition
-    else x div y 
+    then raise D_0 42
+    else x div y
 
+fun mydiv2 (x,y) =
+    if  Real.toString(y) ="0.0"
+    then raise D_00 42.0
+    else x / y 
+
+		   
 fun maxlist (xs,ex) = (* int list * exn -> int *)
     case xs of
         [] => raise ex
       | x::[] => x
       | x::xs' => Int.max(x,maxlist(xs',ex))
 
+			 
 val w = maxlist ([3,4,5],MyUndesirableCondition) (* 5 *)
-
 val x = maxlist ([3,4,5],MyUndesirableCondition) (* 5 *)
 	handle MyUndesirableCondition => 42
-
 (*val y = maxlist ([],MyUndesirableCondition)*)
-
 val z = maxlist ([],MyUndesirableCondition) (* 42 *)
 	handle MyUndesirableCondition => 42
 
+					     
+val TEST_39 = hd [] handle Nope msg   => msg = "Nope"
+val TEST_40 = (mydiv1 (5,0)  handle D_0 msg  => msg) = 42
+val TEST_41 = Real.toString(mydiv2 (5.0, 0.0) handle D_00 msg => msg) = "42.0"
+val TEST_42 = Real.toString(mydiv2 (5.0, 1.0) handle D_00 msg => msg) = "5.0"
+val TEST_43 = (add2 (1,1) handle Yuppers msg => ( add2 (msg))) = 42
+val TEST_44 = add2 (2,2) = 4
+val TEST_45 = testF () = "E has been raised."
+val TEST_46 = (f () handle E msg => msg) = "E has been raised."
+						
+(* *********************************************************************************
 
 (* Section 2: Tail Recursion *)
 					     
